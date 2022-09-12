@@ -1,0 +1,1 @@
+import '../src/controllers/account.controller.js'
