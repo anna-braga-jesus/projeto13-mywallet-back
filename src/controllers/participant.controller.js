@@ -16,21 +16,24 @@ export const participantSchema = Joi.object({
 });
 
 async function createParticipant(req, res) {
-  const { email, name, password, repeat_password } = req.body;
-
-  if (!email || !name || !password ||repeat_password) {
-    return res.sendStatus(400);
+  const { email, nome, senha, senha1 } = req.body;
+  console.log(senha, "essa é a senha bonita");
+  if (!email || !nome || !senha) {
+    if (senha !== senha1) {
+      return res.sendStatus(422);
+    }
   }
-
-  const hashPassword = bcrypt.hashSync(password, 10);
-
   try {
-    await db.collection("users").insertOne({
-      email,
-      name,
-      password: hashPassword,
-      repeat_password
-    });
+    const formato = ( () => {
+      bcrypt.hash(senha, 10, async (err, hash) => {
+        await db.collection("users").insertOne({
+          email,
+          name: nome,
+          password: hash,
+        });
+      })
+
+      })()
     return res.sendStatus(201);
   } catch (error) {
     console.error(error);
@@ -60,12 +63,11 @@ async function Login(req, res) {
       userId: user._id,
     });
 
-    return res.send(token);
+    return res.send({token, name: user.name});
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
-  
 }
 
 async function LogOut(req, res) {
