@@ -103,7 +103,7 @@ async function transactions (req, res) {
     return res.sendStatus(500);
   }
 
-  return res.sendStatus(200);
+  
 }
 
 async function deleteCash (req, res){
